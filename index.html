@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JSON IPTV অটো ক্যাটাগরি ও লাইভ প্লেয়ার</title>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <title>JSON to Text Playlist Convertor</title>
     <style>
         * {
             margin: 0;
@@ -14,249 +13,169 @@
         }
 
         body {
-            background-color: #080c14;
-            color: #ffffff;
+            background-color: #0f172a;
+            color: #e2e8f0;
             padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
         }
 
         h2 {
             text-align: center;
             margin-bottom: 25px;
-            color: #00ffcc;
-            text-shadow: 0 0 10px rgba(0, 255, 204, 0.4);
+            color: #38bdf8;
         }
 
-        /* ভিডিও প্লেয়ার সেকশন */
-        .player-container {
-            max-width: 800px;
-            margin: 0 auto 30px;
-            background: #000;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0 20px rgba(0, 255, 204, 0.2);
-            display: none; /* শুরুতে প্লেয়ার হাইড থাকবে */
-        }
-
-        video {
-            width: 100%;
-            aspect-ratio: 16/9;
-            display: block;
-        }
-
-        .player-title {
-            background: #111827;
-            padding: 12px;
-            font-size: 16px;
-            color: #00ffcc;
-            font-weight: bold;
-            border-top: 1px solid #1f2937;
-        }
-
-        /* ইনপুট ও আপলোড সেকশন */
+        /* ইনপুট এরিয়া */
         .input-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 30px;
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
             display: flex;
             flex-direction: column;
             gap: 15px;
             align-items: center;
+            border: 1px solid #334155;
         }
 
         .url-input-box {
             display: flex;
             width: 100%;
-            max-width: 700px;
             gap: 10px;
         }
 
         .url-input-box input {
             flex: 1;
-            padding: 12px 15px;
+            padding: 12px;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: #111827;
+            border: 1px solid #475569;
+            background: #0f172a;
             color: #fff;
-            font-size: 14px;
             outline: none;
         }
 
         .url-input-box input:focus {
-            border-color: #00ffcc;
-            box-shadow: 0 0 10px rgba(0, 255, 204, 0.2);
+            border-color: #38bdf8;
         }
 
         .btn {
-            background: #00ffcc;
-            color: #000;
-            padding: 12px 25px;
+            background: #38bdf8;
+            color: #0f172a;
+            padding: 12px 24px;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 14px;
-            transition: all 0.3s ease;
+            transition: all 0.2s;
         }
 
         .btn:hover {
-            box-shadow: 0 0 15px #00ffcc;
-            transform: scale(1.02);
+            background: #0ea5e9;
         }
 
         .divider {
-            color: #6b7280;
+            color: #94a3b8;
             font-size: 14px;
-            position: relative;
-            width: 100%;
-            text-align: center;
         }
 
-        .upload-btn-label {
-            background: rgba(255, 255, 255, 0.08);
+        .upload-label {
+            background: #334155;
             color: #fff;
-            border: 1px dashed rgba(255, 255, 255, 0.3);
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
+            border: 1px dashed #64748b;
         }
 
-        .upload-btn-label:hover {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: #00ffcc;
+        /* আউটপুট এরিয়া */
+        .output-section {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #334155;
+            display: none; /* শুরুতে হাইড থাকবে */
         }
 
-        /* ক্যাটাগরি ও চ্যানেল গ্রিড স্টাইল */
-        .category-block {
-            margin-bottom: 40px;
-        }
-
-        .category-title {
-            font-size: 18px;
-            color: #ff007f;
-            border-bottom: 2px solid rgba(255, 0, 127, 0.2);
-            padding-bottom: 8px;
-            margin-bottom: 20px;
+        .output-header {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .category-title span {
-            background: rgba(255, 0, 127, 0.15);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 13px;
+        .copy-btn {
+            background: #22c55e;
             color: #fff;
-        }
-
-        .channel-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .channel-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 12px;
-            text-align: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.2s ease;
+            font-weight: bold;
         }
 
-        .channel-card:hover {
-            transform: translateY(-4px);
-            border-color: #00ffcc;
-            background: rgba(255, 255, 255, 0.04);
+        .copy-btn:hover {
+            background: #16a34a;
         }
 
-        .channel-logo {
-            width: 60px;
-            height: 60px;
-            background: #111827;
-            border-radius: 50%;
-            margin: 0 auto 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            overflow: hidden;
-        }
-
-        .channel-logo img {
+        /* টেক্সট বক্স স্টাইল */
+        textarea {
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .channel-name {
-            font-size: 13px;
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            height: 450px;
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>IPTV স্মার্ট ক্যাটাগরি প্লেয়ার</h2>
-
-    <div class="player-container" id="playerContainer">
-        <video id="liveVideo" controls autoplay></video>
-        <div class="player-title" id="playerTitle">চ্যানেলের নাম</div>
-    </div>
+    <h2>IPTV JSON টু সিরিয়াল টেক্সট কনভার্টার</h2>
 
     <div class="input-section">
         <div class="url-input-box">
-            <input type="url" id="jsonUrl" placeholder="আপনার JSON প্লেলিস্টের URL এখানে পেস্ট করুন (e.g. https://site.com/list.json)">
-            <button class="btn" onclick="loadJsonFromUrl()">লোড করুন</button>
+            <input type="url" id="jsonUrl" placeholder="আপনার JSON প্লেলিস্টের URL দিন">
+            <button class="btn" onclick="loadJsonFromUrl()">কনভার্ট করুন</button>
         </div>
-
-        <div class="divider"> অথবা </div>
-
+        <div class="divider">অথবা</div>
         <div>
-            <label for="jsonFile" class="upload-btn-label">📂 ফাইল আপলোড করুন</label>
+            <label for="jsonFile" class="upload-label">📂 JSON ফাইল আপলোড করুন</label>
             <input type="file" id="jsonFile" accept=".json" style="display:none;" onchange="loadJsonFromFile(event)">
         </div>
     </div>
 
-    <div id="playlistContainer"></div>
+    <div class="output-section" id="outputSection">
+        <div class="output-header">
+            <h3>সাজানো টেক্সট প্লেলিস্ট (m3u ফরম্যাট):</h3>
+            <button class="copy-btn" onclick="copyText()">Copy Text</button>
+        </div>
+        <textarea id="playlistTextArea" readonly></textarea>
+    </div>
 </div>
 
 <script>
-    // ১. URL থেকে JSON ডাটা নিয়ে আসার ফাংশন
+    // URL থেকে ডাটা লোড
     function loadJsonFromUrl() {
         const url = document.getElementById('jsonUrl').value.trim();
-        if (!url) {
-            alert("অনুগ্রহ করে একটি সঠিক URL দিন।");
-            return;
-        }
+        if (!url) { return alert("অনুগ্রহ করে URL দিন।"); }
 
         fetch(url)
-            .then(response => {
-                if (!response.ok) throw new Error("নেটওয়ার্ক রেসপন্স ঠিক নেই।");
-                return response.json();
-            })
-            .then(data => processAndRenderChannels(data))
-            .catch(error => {
-                console.error(error);
-                alert("দুঃখিত! URL থেকে প্লেলিস্ট লোড করা যায়নি। CORS পলিসি বা ভুল URL এর জন্য এটি হতে পারে।");
-            });
+            .then(res => res.json())
+            .then(data => generateTextPlaylist(data))
+            .catch(err => alert("URL থেকে ডাটা আনা যায়নি। CORS প্রবলেম হতে পারে।"));
     }
 
-    // ২. লোকাল ফাইল থেকে JSON ডাটা রিড করার ফাংশন
+    // ফাইল থেকে ডাটা লোড
     function loadJsonFromFile(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -265,132 +184,90 @@
         reader.onload = function(e) {
             try {
                 const data = JSON.parse(e.target.result);
-                processAndRenderChannels(data);
-            } catch (error) {
-                alert("ভুল JSON ফাইল! দয়া করে ফাইলটি চেক করুন।");
+                generateTextPlaylist(data);
+            } catch (err) {
+                alert("ভুল JSON ফাইল!");
             }
         };
         reader.readAsText(file);
     }
 
-    // নাম অনুযায়ী স্বয়ংক্রিয়ভাবে ফিল্টার এবং সাজানোর লজিক
-    function processAndRenderChannels(channels) {
+    // নাম দেখে ফিল্টার ও টেক্সট জেনারেট করার মেইন ফাংশন
+    function generateTextPlaylist(channels) {
+        // ৫টি ক্যাটাগরি তৈরি
         const categories = {
-            sports: { title: "⚽ স্পোর্টস চ্যানেল (Sports)", list: [] },
-            bangla: { title: "🇧🇩 বাংলা চ্যানেল (Bangla)", list: [] },
-            indian: { title: "🇮🇳 ইন্ডিয়ান চ্যানেল (Indian & Indian Bangla)", list: [] },
-            music: { title: "🎵 মিউজিক চ্যানেল (Music)", list: [] },
-            others: { title: "📺 অন্যান্য চ্যানেল (Others)", list: [] }
+            sports: [],
+            bangla: [],
+            indian: [],
+            music: [],
+            others: []
         };
 
+        // নাম দেখে ফিল্টারিং
         channels.forEach(channel => {
-            // আপনার JSON ফাইলের কী-নাম ভিন্ন হলে (যেমন title বা title_bd) নিচের লাইনটি পরিবর্তন করবেন
-            const channelName = channel.name || channel.title || ""; 
+            const channelName = channel.name || channel.title || "Unknown Channel";
             const name = channelName.toLowerCase();
 
-            // নাম দেখে স্বয়ংক্রিয়ভাবে ক্যাটাগরি বাছাই করার কিওয়ার্ডস
             if (name.includes('sports') || name.includes('sport') || name.includes('t sports') || name.includes('gazi tv') || name.includes('gtv') || name.includes('cricket') || name.includes('football') || name.includes('ten') || name.includes('sony') || name.includes('star sports')) {
-                categories.sports.list.push(channel);
+                categories.sports.push(channel);
             } 
             else if (name.includes('somoy') || name.includes('jamuna') || name.includes('independent') || name.includes('channel i') || name.includes('atn') || name.includes('ntv') || name.includes('ekattor') || name.includes('bangla') || name.includes('dhaka')) {
-                // বাংলাদেশী বাংলা চ্যানেল (যদি অলরেডি ইন্ডিয়ান বা স্পোর্টস কিওয়ার্ড না থাকে)
                 if(name.includes('zee bangla') || name.includes('star jalsha') || name.includes('colors bangla')) {
-                    categories.indian.list.push(channel);
+                    categories.indian.push(channel);
                 } else {
-                    categories.bangla.list.push(channel);
+                    categories.bangla.push(channel);
                 }
             } 
             else if (name.includes('star jalsha') || name.includes('zee bangla') || name.includes('colors bangla') || name.includes('sony aath') || name.includes('star plus') || name.includes('zee tv') || name.includes('india') || name.includes('jalsha')) {
-                categories.indian.list.push(channel);
+                categories.indian.push(channel);
             } 
             else if (name.includes('music') || name.includes('gaan') || name.includes('sangeet') || name.includes('mtv') || name.includes('b4u')) {
-                categories.music.list.push(channel);
+                categories.music.push(channel);
             } 
             else {
-                categories.others.list.push(channel);
+                categories.others.push(channel);
             }
         });
 
-        // আপনার পছন্দের নির্দিষ্ট সিরিয়াল অর্ডার অনুযায়ী রেন্ডারিং
-        const container = document.getElementById('playlistContainer');
-        container.innerHTML = ''; 
-
+        // আপনার পছন্দের সিরিয়াল অর্ডার
         const order = ['sports', 'bangla', 'indian', 'music', 'others'];
+        
+        // m3u হেডার দিয়ে টেক্সট তৈরি শুরু
+        let textResult = "#EXTM3U\n\n";
 
         order.forEach(catKey => {
-            const cat = categories[catKey];
-            if (cat.list.length > 0) {
-                const catBlock = document.createElement('div');
-                catBlock.className = 'category-block';
+            const list = categories[catKey];
+            if (list.length > 0) {
+                // টেক্সটের মাঝে ক্যাটাগরি চেনার জন্য একটি কমেন্ট বা সেপারেটর
+                textResult += `\n#=== ${catKey.toUpperCase()} CHANNELS ===\n`;
 
-                catBlock.innerHTML = `
-                    <div class="category-title">
-                        ${cat.title} <span>${cat.list.length}টি</span>
-                    </div>
-                    <div class="channel-grid" id="grid-${catKey}"></div>
-                `;
-                container.appendChild(catBlock);
-
-                const grid = document.getElementById(`grid-${catKey}`);
-                cat.list.forEach(channel => {
-                    const card = document.createElement('div');
-                    card.className = 'channel-card';
-                    
+                list.forEach(channel => {
                     const cName = channel.name || channel.title || "Unknown";
-                    const logo = channel.logo || channel.image || channel.logo_url || '📺'; 
-                    const url = channel.url || channel.link || channel.stream_url || '';
+                    const logo = channel.logo || channel.image || channel.logo_url || "";
+                    const url = channel.url || channel.link || channel.stream_url || "";
 
-                    card.onclick = () => playChannel(url, cName);
-
-                    // লোগো চেক করা (লিংক নাকি ইমোজি)
-                    const logoHtml = logo.startsWith('http') ? `<img src="${logo}" alt="logo">` : logo;
-
-                    card.innerHTML = `
-                        <div class="channel-logo">${logoHtml}</div>
-                        <div class="channel-name">${cName}</div>
-                    `;
-                    grid.appendChild(card);
+                    // স্ট্যান্ডার্ড IPTV m3u টেক্সট ফরম্যাট তৈরি
+                    textResult += `#EXTINF:-1 tvg-logo="${logo}" group-title="${catKey}",${cName}\n${url}\n`;
                 });
             }
         });
+
+        // টেক্সট বক্সে ডাটা শো করানো
+        const outputSection = document.getElementById('outputSection');
+        const textArea = document.getElementById('playlistTextArea');
+        
+        textArea.value = textResult;
+        outputSection.style.display = 'block'; // টেক্সট বক্সটি স্ক্রিনে দৃশ্যমান করা
+        outputSection.scrollIntoView({ behavior: 'smooth' });
     }
 
-    // লাইভ ভিডিও প্লেয়ার কন্ট্রোল করার ফাংশন (HLS/m3u8 সাপোর্ট সহ)
-    function playChannel(url, name) {
-        if (!url) {
-            alert("এই চ্যানেলের কোনো প্লে-লিংক পাওয়া যায়নি।");
-            return;
-        }
-
-        const playerContainer = document.getElementById('playerContainer');
-        const video = document.getElementById('liveVideo');
-        const playerTitle = document.getElementById('playerTitle');
-
-        playerContainer.style.display = 'block'; // প্লেয়ার ওপেন করা
-        playerTitle.innerText = "প্লে হচ্ছে: " + name;
-
-        // স্ক্রল করে প্লেয়ারের কাছে নিয়ে যাওয়ার জন্য
-        playerContainer.scrollIntoView({ behavior: 'smooth' });
-
-        // m3u8 (HLS) বা নরমাল MP4 প্লে করার লজিক
-        if (url.includes('.m3u8')) {
-            if (Hls.isSupported()) {
-                const hls = new Hls();
-                hls.loadSource(url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // অ্যাপল ব্রাউজার বা সাফারির জন্য ডিফল্ট সাপোর্ট
-                video.src = url;
-                video.play();
-            }
-        } else {
-            // নরমাল MP4 বা অন্যান্য ফরম্যাটের জন্য
-            video.src = url;
-            video.play();
-        }
+    // টেক্সট কপি করার ফাংশন
+    function copyText() {
+        const textArea = document.getElementById('playlistTextArea');
+        textArea.select();
+        textArea.setSelectionRange(0, 99999); // মোবাইল ডিভাইসের জন্য
+        navigator.clipboard.writeText(textArea.value);
+        alert("পুরো টেক্সট প্লেলিস্টটি কপি হয়েছে!");
     }
 </script>
 
